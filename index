@@ -1,0 +1,2673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trắc nghiệm Quản lý Dự án CNTT</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 15px;
+            -webkit-overflow-scrolling: touch;
+            background-color: transparent !important;
+        }
+
+        /* Container hoàn toàn trong suốt */
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background-color: transparent;
+            position: relative;
+        }
+
+        /* Menu Button - Nút menu duy nhất */
+        .menu-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.95);
+            color: white;
+            border: none;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .menu-button:active {
+            transform: scale(0.95);
+            background: rgba(41, 128, 185, 0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Menu Panel - Có thể cuộn */
+        .menu-panel {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            width: 320px;
+            max-height: 70vh;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+            z-index: 1001;
+            display: none;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .menu-panel.active {
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Menu header với nút đóng */
+        .menu-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .menu-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-menu {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .close-menu:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.9);
+        }
+
+        /* Menu content - Có thể cuộn */
+        .menu-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            -webkit-overflow-scrolling: touch;
+            max-height: calc(70vh - 120px);
+        }
+
+        /* Custom scrollbar cho menu */
+        .menu-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .menu-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .menu-content::-webkit-scrollbar-thumb {
+            background: rgba(52, 152, 219, 0.5);
+            border-radius: 10px;
+        }
+
+        .menu-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(52, 152, 219, 0.7);
+        }
+
+        /* Menu sections */
+        .menu-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .menu-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-title i {
+            color: #3498db;
+            width: 20px;
+            text-align: center;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 12px;
+        }
+
+        .toggle-label {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        /* Switch toggle */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 54px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked + .slider {
+            background-color: #3498db;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Time options - Dạng thanh trượt ngang có thể cuộn */
+        .time-options-container {
+            position: relative;
+            margin-top: 15px;
+        }
+
+        .time-options-scroll {
+            display: flex;
+            gap: 10px;
+            padding: 5px 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+
+        .time-options-scroll::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
+        }
+
+        .time-option {
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.9rem;
+            border: 2px solid transparent;
+            color: #2c3e50;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .time-option:active {
+            transform: scale(0.95);
+        }
+
+        .time-option.selected {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px 10px;
+            background: rgba(248, 249, 250, 0.8);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:active {
+            transform: scale(0.98);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #3498db;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            margin: 15px 0;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #3498db);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+            box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+        }
+
+        /* Action buttons - Dạng danh sách có thể cuộn */
+        .action-buttons-container {
+            max-height: 200px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            text-align: left;
+            width: 100%;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: #3498db;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+        }
+
+        .btn-success {
+            background: #2ecc71;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+        }
+
+        .btn-purple {
+            background: #9b59b6;
+        }
+
+        .action-btn i {
+            font-size: 1.1rem;
+            width: 24px;
+        }
+
+        /* Background upload */
+        .bg-upload-section {
+            text-align: center;
+        }
+
+        .bg-upload-section input {
+            display: none;
+        }
+
+        .bg-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px;
+            background: #9b59b6;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .bg-upload-label:active {
+            background: #8e44ad;
+            transform: scale(0.98);
+        }
+
+        /* Main question container - HOÀN TOÀN TRONG SUỐT */
+        .question-container {
+            background: rgba(255, 255, 255, 0.05) !important; /* Gần như trong suốt */
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .question-number {
+            font-size: 1.1rem;
+            color: #3498db;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Image trong câu hỏi */
+        .question-image {
+            max-width: 100%;
+            margin: 20px auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: block;
+        }
+
+        /* Answers - HOÀN TOÀN TRONG SUỐT */
+        .answers-container {
+            display: grid;
+            gap: 12px;
+        }
+
+        .answer-option {
+            padding: 20px 18px;
+            background: rgba(255, 255, 255, 0.05) !important; /* Gần như trong suốt */
+            border: 2px solid rgba(52, 152, 219, 0.3);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            touch-action: manipulation;
+            min-height: 70px;
+            user-select: none;
+        }
+
+        .answer-option:active {
+            transform: scale(0.99);
+        }
+
+        .answer-option:hover {
+            background: rgba(52, 152, 219, 0.1) !important;
+            border-color: rgba(52, 152, 219, 0.6);
+        }
+
+        .answer-option.selected {
+            border-width: 3px;
+            background: rgba(52, 152, 219, 0.15) !important;
+        }
+
+        .answer-option.correct {
+            background: rgba(40, 167, 69, 0.15) !important;
+            border-color: rgba(40, 167, 69, 0.8);
+            color: #155724;
+        }
+
+        .answer-option.incorrect {
+            background: rgba(220, 53, 69, 0.15) !important;
+            border-color: rgba(220, 53, 69, 0.8);
+            color: #721c24;
+        }
+
+        .answer-letter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: rgba(52, 152, 219, 0.2);
+            border-radius: 12px;
+            font-weight: bold;
+            color: #2c3e50;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .answer-option.correct .answer-letter {
+            background: rgba(40, 167, 69, 0.8);
+            color: white;
+        }
+
+        .answer-option.incorrect .answer-letter {
+            background: rgba(220, 53, 69, 0.8);
+            color: white;
+        }
+
+        /* Navigation buttons - TRONG SUỐT */
+        .navigation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .nav-btn {
+            padding: 18px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: white;
+            background: rgba(52, 152, 219, 0.3);
+            border: 2px solid rgba(52, 152, 219, 0.5);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.98);
+            background: rgba(52, 152, 219, 0.4);
+        }
+
+        .nav-btn.prev {
+            background: rgba(41, 128, 185, 0.3);
+            border-color: rgba(41, 128, 185, 0.5);
+        }
+
+        .nav-btn.next {
+            background: rgba(52, 152, 219, 0.3);
+            border-color: rgba(52, 152, 219, 0.5);
+        }
+
+        /* Timer indicator */
+        .timer-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: #2c3e50;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 999;
+            min-width: 180px;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .timer-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(52, 152, 219, 0.3);
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid rgba(52, 152, 219, 0.5);
+        }
+
+        /* Modal danh sách câu hỏi */
+        .questions-list-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .questions-list-content {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 24px;
+            padding: 25px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .questions-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 1;
+        }
+
+        .questions-list-header h2 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            font-weight: 800;
+        }
+
+        .close-modal {
+            background: #f8f9fa;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #6c757d;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:active {
+            background: #e9ecef;
+            color: #e74c3c;
+        }
+
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+
+        .question-item {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            touch-action: manipulation;
+            color: #2c3e50;
+        }
+
+        .question-item:active {
+            transform: scale(0.95);
+        }
+
+        .question-item.current {
+            border-color: #3498db;
+            background: #3498db;
+            color: white;
+            box-shadow: 0 8px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .question-item.answered {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .question-item.incorrect-answered {
+            background: #e74c3c;
+            color: white;
+        }
+
+        /* Menu overlay */
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .menu-overlay.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .menu-panel {
+                width: 300px;
+                right: 15px;
+                top: 85px;
+            }
+            
+            .questions-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            
+            .question-text {
+                font-size: 1.25rem;
+            }
+            
+            .answer-option {
+                padding: 18px 16px;
+                font-size: 1rem;
+            }
+            
+            .answer-letter {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            
+            .time-option {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+            
+            .timer-indicator {
+                padding: 10px 20px;
+                min-width: 160px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .menu-panel {
+                width: 280px;
+                right: 10px;
+            }
+            
+            .questions-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .question-text {
+                font-size: 1.2rem;
+            }
+            
+            .answer-option {
+                min-height: 65px;
+            }
+            
+            .menu-button {
+                width: 55px;
+                height: 55px;
+                font-size: 1.3rem;
+            }
+        }
+
+        /* iOS safe areas */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            
+            .menu-button {
+                top: calc(20px + env(safe-area-inset-top));
+                right: calc(20px + env(safe-area-inset-right));
+            }
+            
+            .menu-panel {
+                top: calc(85px + env(safe-area-inset-top));
+                max-height: calc(70vh - env(safe-area-inset-top));
+            }
+            
+            .timer-indicator {
+                bottom: calc(20px + env(safe-area-inset-bottom));
+            }
+        }
+
+        /* Animation */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .correct-feedback {
+            animation: pulse 0.5s ease;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Nút Menu duy nhất -->
+    <button class="menu-button" id="menuButton">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Overlay để đóng menu -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
+    <!-- Panel menu CÓ THỂ CUỘN -->
+    <div class="menu-panel" id="menuPanel">
+        <div class="menu-header">
+            <h3><i class="fas fa-cog"></i> Cài đặt & Công cụ</h3>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="menu-content" id="menuContent">
+            <!-- Section 1: Chế độ ngẫu nhiên -->
+            <div class="menu-section">
+                <div class="menu-title">
+                    <i class="fas fa-random"></i> Chế độ ngẫu nhiên
+                </div>
+                <div class="toggle-group">
+                    <div class="toggle-label">Đảo thứ tự câu hỏi</div>
+                    <label class="switch">
+                        <input type="checkbox" id="randomMode">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-group">
+                    <div class="toggle-label">Đảo thứ tự đáp án</div>
+                    <label class="switch">
+                        <input type="checkbox" id="shuffleAnswers">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Section 2: Tự động chuyển câu -->
+            <div class="menu-section">
+                <div class="menu-title">
+                    <i class="fas fa-clock"></i> Tự động chuyển câu
+                </div>
+                <div class="time-options-container">
+                    <div class="time-options-scroll">
+                        <div class="time-option selected" data-time="0">Tắt</div>
+                        <div class="time-option" data-time="1">1 giây</div>
+                        <div class="time-option" data-time="2">2 giây</div>
+                        <div class="time-option" data-time="3">3 giây</div>
+                        <div class="time-option" data-time="5">5 giây</div>
+                        <div class="time-option" data-time="10">10 giây</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Thống kê -->
+            <div class="menu-section">
+                <div class="menu-title">
+                    <i class="fas fa-chart-bar"></i> Thống kê
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item" onclick="updateStats()">
+                        <div class="stat-value" id="correctCount">0</div>
+                        <div class="stat-label">Đúng</div>
+                    </div>
+                    <div class="stat-item" onclick="alert('Số câu sai: ' + document.getElementById('incorrectCount').textContent)">
+                        <div class="stat-value" id="incorrectCount">0</div>
+                        <div class="stat-label">Sai</div>
+                    </div>
+                    <div class="stat-item" onclick="alert('Số câu chưa làm: ' + document.getElementById('unansweredCount').textContent)">
+                        <div class="stat-value" id="unansweredCount">75</div>
+                        <div class="stat-label">Chưa làm</div>
+                    </div>
+                    <div class="stat-item" onclick="alert('Tiến độ: ' + document.getElementById('progressPercent').textContent)">
+                        <div class="stat-value" id="progressPercent">0%</div>
+                        <div class="stat-label">Hoàn thành</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Tiến độ -->
+            <div class="menu-section">
+                <div class="menu-title">
+                    <i class="fas fa-tasks"></i> Tiến độ
+                </div>
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span>Đã làm</span>
+                        <span id="progressText">0/75 câu</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Công cụ (có thể cuộn) -->
+            <div class="menu-section">
+                <div class="menu-title">
+                    <i class="fas fa-tools"></i> Công cụ
+                </div>
+                <div class="action-buttons-container">
+                    <div class="action-buttons">
+                        <button class="action-btn btn-primary" id="showAllQuestions">
+                            <i class="fas fa-list"></i> Danh sách câu hỏi
+                        </button>
+                        <button class="action-btn btn-warning" id="redoWrong">
+                            <i class="fas fa-redo"></i> Làm lại câu sai
+                        </button>
+                        <button class="action-btn btn-success" id="resetQuiz">
+                            <i class="fas fa-sync-alt"></i> Làm lại từ đầu
+                        </button>
+                        <button class="action-btn btn-info" id="jumpToQuestion">
+                            <i class="fas fa-search"></i> Nhảy đến câu
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Hình nền -->
+            <div class="menu-section">
+                <div class="menu-title">
+                    <i class="fas fa-palette"></i> Giao diện
+                </div>
+                <div class="bg-upload-section">
+                    <input type="file" id="bgImageUpload" accept="image/*">
+                    <label for="bgImageUpload" class="bg-upload-label">
+                        <i class="fas fa-upload"></i> Tải ảnh nền
+                    </label>
+                    <button class="action-btn btn-info" id="clearBackground" style="margin-top: 10px;">
+                        <i class="fas fa-times"></i> Xóa ảnh nền
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timer indicator -->
+    <div class="timer-indicator">
+        <i class="fas fa-hourglass-half"></i>
+        <span>Đếm ngược:</span>
+        <div class="timer-circle" id="timerCircle">0</div>
+    </div>
+
+    <!-- Main content -->
+    <div class="container">
+        <div class="question-container">
+            <div class="question-number">
+                <span>Câu <span id="currentQuestionNumber">1</span>/75</span>
+                <span id="questionStatus"></span>
+            </div>
+            <div class="question-text" id="questionText"></div>
+            <div id="questionImage"></div>
+            <div class="answers-container" id="answersContainer"></div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn prev" id="prevQuestion">
+                <i class="fas fa-arrow-left"></i> Câu trước
+            </button>
+            <button class="nav-btn next" id="nextQuestion">
+                Câu sau <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal danh sách câu hỏi -->
+    <div class="questions-list-modal" id="questionsListModal">
+        <div class="questions-list-content">
+            <div class="questions-list-header">
+                <h2>Chọn câu hỏi (75 câu)</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="questions-grid" id="questionsGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Dữ liệu 75 câu hỏi mới
+        const questions = [
+            {
+                id: 1,
+                question: "Mục đích của mô hình lập trình 3 lớp (three layers) là để?",
+                options: [
+                    "Dễ quản lý các thành phần của hệ thống.",
+                    "Không bị ảnh hưởng bởi các thay đổi.",
+                    "Công việc không bị chồng chéo và ảnh hưởng lẫn nhau",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 2,
+                question: "Lựa chọn nào ở dưới đây chỉ ra các thành phần trong mô hình 3 lớp - three layers?",
+                options: [
+                    "Presentation Layers, Business Logic Layer, Data Access Layer.",
+                    "Model, View, Controller.",
+                    "Client – Server.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 3,
+                question: "Lựa chọn nào ở dưới đây chỉ ra các thành phần trong mô hình MVC?",
+                options: [
+                    "Model, View, Controller.",
+                    "Presentation Layers, Business Logic Layer, Data Access Layer.",
+                    "Client – Server.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 4,
+                question: "Lựa chọn đáp án đúng trong các đáp án dưới đây cho chức năng của lớp Presentation Layers.",
+                options: [
+                    "Lớp này làm nhiệm vụ giao tiếp với người dùng cuối để thu thập dữ liệu và hiển thị kết quả/dữ liệu thông qua các thành phần trong giao diện người sử dụng.",
+                    "Lớp này làm nhiệm vụ xử lý chính các dữ liệu trước khi được đưa lên hiển thị trên màn hình hoặc xử lý các dữ liệu trước khi chuyển xuống Data Access Layer để lưu dữ liệu xuống cơ sở dữ liệu. Đây là nơi để kiểm tra ràng buộc, các yêu cầu nghiệp vụ, tính toán, xử lý các yêu cầu và lựa chọn kết quả trả về cho Presentation Layers.",
+                    "Lớp này thực hiện các nghiệp vụ liên quan đến lưu trữ và truy xuất dữ liệu của ứng dụng như đọc, lưu, cập nhật cơ sở dữ liệu.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 5,
+                question: "Lựa chọn đáp án đúng trong các đáp án dưới đây cho chức năng của lớp Business Logic Layer.",
+                options: [
+                    "Lớp này làm nhiệm vụ giao tiếp với người dùng cuối để thu thập dữ liệu và hiển thị kết quả/dữ liệu thông qua các thành phần trong giao diện người sử dụng.",
+                    "Lớp này làm nhiệm vụ xử lý chính các dữ liệu trước khi được đưa lên hiển thị trên màn hình hoặc xử lý các dữ liệu trước khi chuyển xuống Data Access Layer để lưu dữ liệu xuống cơ sở dữ liệu. Đây là nơi để kiểm tra ràng buộc, các yêu cầu nghiệp vụ, tính toán, xử lý các yêu cầu và lựa chọn kết quả trả về cho Presentation Layers.",
+                    "Lớp này thực hiện các nghiệp vụ liên quan đến lưu trữ và truy xuất dữ liệu của ứng dụng như đọc, lưu, cập nhật cơ sở dữ liệu.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 6,
+                question: "Lựa chọn đáp án đúng trong các đáp án dưới đây cho chức năng của lớp Data Access Layer.",
+                options: [
+                    "Lớp này làm nhiệm vụ giao tiếp với người dùng cuối để thu thập dữ liệu và hiển thị kết quả/dữ liệu thông qua các thành phần trong giao diện người sử dụng.",
+                    "Lớp này làm nhiệm vụ xử lý chính các dữ liệu trước khi được đưa lên hiển thị trên màn hình hoặc xử lý các dữ liệu trước khi chuyển xuống Data Access Layer để lưu dữ liệu xuống cơ sở dữ liệu. Đây là nơi để kiểm tra ràng buộc, các yêu cầu nghiệp vụ, tính toán, xử lý các yêu cầu và lựa chọn kết quả trả về cho Presentation Layers.",
+                    "Lớp này thực hiện các nghiệp vụ liên quan đến lưu trữ và truy xuất dữ liệu của ứng dụng như đọc, lưu, cập nhật cơ sở dữ liệu.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 7,
+                question: "Điểm khác biệt giữa mô hình 3 lớp (three layer) và mô hình MVC?",
+                options: [
+                    "Mô hình MVC thành phần Model giữ chức năng của cả lớp Business và Data Access trong mô hình 3 lớp.",
+                    "Mô hình MVC thành phần Model giữ chức năng của cả lớp Business và Presentation Layers trong mô hình 3 lớp.",
+                    "Mô hình MVC thành phần Model giữ chức năng của cả lớp Data Access và Presentation Layers trong mô hình 3 lớp.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 8,
+                question: "Trong thiết kế hệ thống các tổ chức tín dụng, nguyên tắc thiết kế mã khách hàng là?",
+                options: [
+                    "Duy nhất trên toàn hệ thống.",
+                    "Mỗi chi nhánh một mã.",
+                    "Mỗi vùng một mã.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 9,
+                question: "Cho 2 bảng thông tin khách hàng và định danh khách hàng với các khóa chính như sau: TBCM_GENERAL (BRCD, CUSTSEQ), TBCM_CUSTID (BRCD, CUSTSEQ, IDTPCD), xác định kiểu quan hệ giữa 2 bảng này:",
+                options: [
+                    "Một – một.",
+                    "Một – nhiều.",
+                    "Không có quan hệ.",
+                    "Cả 3 đáp án trên đều sai."
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 10,
+                question: "Quy trình từ khi tiếp nhận yêu cầu đề nghị vay vốn của khách hàng cho đến khi ngân hàng đồng ý phê duyệt khoản vay trải qua các bước nào dưới đây?",
+                options: [
+                    "Đơn xin vay => Chấm điểm khách hàng => Phê duyệt => Thẩm định.",
+                    "Chấm điểm khách hàng => Đơn xin vay => Thẩm định => Phê duyệt.",
+                    "Chấm điểm khách hàng => Thẩm định => Đơn xin vay => Phê duyệt.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 11,
+                question: "Quy trình đăng ký tài sản bảo đảm / giao dịch bảo đảm trải qua các bước nào dưới đây?",
+                options: [
+                    "Đăng ký TSBĐ => Định giá => Thế chấp.",
+                    "Định giá => Đăng ký TSBĐ => Thế chấp.",
+                    "Thế chấp => Định giá => Đăng ký TSBĐ.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 12,
+                question: "Quy trình giải chấp tài sản trải qua các bước nào dưới đây?",
+                options: [
+                    "Giải chấp TSBĐ => Giải chấp thế chấp.",
+                    "Giải chấp thế chấp => Giải chấp TSBĐ.",
+                    "Giải chấp TSBĐ.",
+                    "Cả 3 đáp áp trên."
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 13,
+                question: "Quy trình từ khi ngân hàng phê duyệt khoản vay của khách hàng cho đến khi khách hàng trả nợ trải qua các bước nào dưới đây?",
+                options: [
+                    "Giải ngân => Phê duyệt => Trả nợ.",
+                    "Trả nợ => Giải ngân => Phê duyệt.",
+                    "Phê duyệt => Giải ngân => Trả nợ.",
+                    "Cả 3 đáp án trên."
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 14,
+                question: "Tiền lãi tiền gửi không kỳ hạn được tính theo công thức",
+                options: [
+                    "Bình quân tháng",
+                    "Số tiền gốc * lãi suất* kỳ hạn",
+                    "Số tiền gốc * lãi suất/kỳ hạn",
+                    "Số tiền gốc / lãi suất*kỳ hạn"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 15,
+                question: "Tiền lãi tiền gửi có kỳ hạn được tính theo công thức",
+                options: [
+                    "Bình quân tháng",
+                    "Số tiền gốc * lãi suất* kỳ hạn",
+                    "Số tiền gốc * lãi suất/kỳ hạn",
+                    "Số tiền gốc / lãi suất*kỳ hạn"
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 16,
+                question: "Các chức năng cần xây dựng cho tiền gửi có kỳ hạn",
+                options: [
+                    "Mở, đóng, gia hạn, hủy giao dịch",
+                    "Mở, đóng, chi lãi cuối tháng",
+                    "Gửi tiền, rút tiền, hủy giao dịch",
+                    "Gồm cả đáp án 2 và đáp án 3"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 17,
+                question: "Các chức năng cần xây dựng cho tiền gửi không kỳ hạn",
+                options: [
+                    "Mở, đóng, gia hạn, hủy giao dịch",
+                    "Mở, đóng, chi lãi cuối tháng",
+                    "Gửi tiền, rút tiền, hủy giao dịch",
+                    "Gồm cả đáp án 2 và đáp án 3"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 18,
+                question: "Chức năng gửi tiền được sử dụng cho",
+                options: [
+                    "Tiền gửi không kỳ hạn",
+                    "Tiền gửi tiết kiệm gửi góp",
+                    "Tiền gửi tiết kiệm thông thường",
+                    "Gồm cả đáp án 1 và đáp án 2"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 19,
+                question: "Chức năng rút tiền được sử dụng cho",
+                options: [
+                    "Tiền gửi không kỳ hạn",
+                    "Tiền gửi tiết kiệm có kỳ hạn thông thường",
+                    "Tiền gửi góp",
+                    "Gồm đáp án 1 và đáp án 2"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 20,
+                question: "Chức năng chi lãi định kỳ được xây dựng cho",
+                options: [
+                    "Tiền gửi có kỳ hạn",
+                    "Tiền gửi không kỳ hạn",
+                    "Tiền gửi góp có định kỳ",
+                    "Các phương án trên đều sai"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 21,
+                question: "Giá trị của lãi suất phụ thuộc vào hợp đồng kỳ hạn hoặc mức tiền gửi ta sử dụng",
+                options: [
+                    "Lãi suất cố định",
+                    "Lãi suất cơ bản",
+                    "Lãi suất theo các mức",
+                    "Các đáp án trên đều sai"
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 22,
+                question: "Ngày 30/1/2016, khách hàng mở tài khoản tiết kiệm lĩnh lãi sau kỳ hạn thông thường với số tiền 10.000.000 vnđ. Nếu khách hàng mở kỳ hạn 1 tháng thì ngày đến hạn của sổ tiết kiệm sẽ là",
+                options: [
+                    "29/2/2016",
+                    "1/3/2016",
+                    "2/3/2016",
+                    "28/2/2016"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 23,
+                question: "Ngày 30/1/2016, khách hàng mở tài khoản tiết kiệm lĩnh lãi sau kỳ hạn thông thường với số tiền 10.000.000 vnđ. Nếu khách hàng mở kỳ hạn 30 ngày thì ngày đến hạn của sổ tiết kiệm sẽ là",
+                options: [
+                    "29/2/2016",
+                    "1/3/2016",
+                    "2/3/2016",
+                    "28/2/2016"
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 24,
+                question: "Thẻ ATM phát hành dựa trên tài khoản",
+                options: [
+                    "Tài khoản có kỳ hạn",
+                    "Tài khoản không kỳ hạn",
+                    "Tài khoản gửi góp",
+                    "Cả đáp án 1 và đáp án 2 đều đúng"
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 25,
+                question: "Thẻ Visa debit phát hành dựa trên tài khoản",
+                options: [
+                    "Tài khoản thanh toán",
+                    "Tài khoản có kỳ hạn",
+                    "Tài khoản gửi góp",
+                    "Cả đáp án 1 và đáp án 2 đều đúng"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 26,
+                question: "Lãi suất của tiền gửi thanh toán thường",
+                options: [
+                    "Cao hơn lãi suất tiền gửi tiết kiệm",
+                    "Thấp hơn lãi suất tiền gửi tiết kiệm",
+                    "Rất thấp không đáng kể",
+                    "Cả đáp án 2 và đáp án 3 đều đúng"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 27,
+                question: "Mục đích của tiền gửi tiết kiệm là",
+                options: [
+                    "Thanh toán",
+                    "Hưởng tiền lãi cho thời gian gửi",
+                    "Đảm bảo an toàn cho số tiền",
+                    "Gồm cả đáp án 2 và đáp án 3"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 28,
+                question: "Khi xây dựng màn hình rút tiền, khách hàng không được rút tiền tài khoản trong trường hợp nào",
+                options: [
+                    "Tài khoản phong tỏa toàn bộ số dư",
+                    "Số dư trên tài khoản thấp hơn số dư tối thiểu",
+                    "Khách hàng bị phong tỏa hoạt động",
+                    "Cả ba đáp án 1, 2 và 3 đều đúng"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 29,
+                question: "Khi xây dựng màn hình gửi tiền, khách hàng không gửi được tiền vào tài khoản trong trường hợp nào",
+                options: [
+                    "Tài khoản phong tỏa số dư",
+                    "Số dư trên tài khoản thấp hơn số dư tối thiểu",
+                    "Khách hàng bị phong tỏa hoạt động",
+                    "Cả ba đáp án 1, 2 và 3 đều đúng"
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 30,
+                question: "Phương thức nào đồng bộ dữ liệu theo thời gian thực",
+                options: [
+                    "Deferred, Import/Export",
+                    "DBLINK, Deferred",
+                    "Golden Gate, DBLINK",
+                    "Golden Gate, Deferred"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 31,
+                question: "Phương thức nào đồng bộ dữ liệu giữa các hệ thống DB khác nhau theo thời gian thực",
+                options: [
+                    "Deferred",
+                    "DBLINK",
+                    "Import/Export",
+                    "Golden Gate"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 32,
+                question: "Khi cần đẩy dữ liệu full bảng trong thời gian ngắn dùng phương thức nào",
+                options: [
+                    "Deferred",
+                    "DBLINK",
+                    "Import/Export",
+                    "Golden Gate"
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 33,
+                question: "Phương thức nào lấy dữ liệu thay đổi dựa trên sự thay đổi của ứng dụng client:",
+                options: [
+                    "Deferred",
+                    "DBLINK",
+                    "Import/Export",
+                    "Golden Gate"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 34,
+                question: "Đặc điểm nào sau đây không đúng với phương thức Golden Gate",
+                options: [
+                    "Đồng bộ dữ liệu thời gian thực",
+                    "Lấy dữ liệu thay đổi dựa trên sự thay đổi của client",
+                    "Áp dụng cho các bảng tạo báo cáo Online",
+                    "Tất cả các đáp án"
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 35,
+                question: "Đặc điểm nào sau đây không đúng với phương thức DBLINK",
+                options: [
+                    "Đồng bộ dữ liệu thời gian thực",
+                    "Áp dụng đối với những bảng dữ liệu nhỏ",
+                    "Không dùng trong trường hợp đẩy full bảng dữ liệu",
+                    "Tất cả các đáp án"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 36,
+                question: "Phương thức đẩy số liệu nào được sử dụng khi chạy xử lý cuối ngày",
+                options: [
+                    "Golden Gate, DBLINK",
+                    "DBLINK, Import/Export",
+                    "Import/Export, Deferred",
+                    "Golden Gate, Deferred"
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 37,
+                question: "Mô tả nào sau đây dùng cho Staging",
+                options: [
+                    "Nơi chứa các nguồn dữ liệu đầu vào hệ thống",
+                    "Nơi chứa tạm thời các dữ liệu chưa qua xử lý",
+                    "Nơi chứa các dữ liệu đã được làm sạch, chuẩn hoá",
+                    "Tất cả các đáp án"
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 38,
+                question: "Mô tả nào sau đây đúng với Data Mart",
+                options: [
+                    "Nơi chứa các nguồn dữ liệu đầu vào hệ thống",
+                    "Nơi chứa tạm thời các dữ liệu chưa qua xử lý",
+                    "Nơi chứa các dữ liệu đã được làm sạch, chuẩn hoá",
+                    "Tất cả các đáp án"
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 39,
+                question: "Dữ liệu dạng thô được hiểu là dạng dữ liệu",
+                options: [
+                    "Dữ liệu gốc chưa qua xử lý",
+                    "Trùng lặp dữ liệu",
+                    "Thông tin nằm ở nhiều bảng khác nhau",
+                    "Tất cả các đáp án"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 40,
+                question: "Dữ liệu dạng thô thường được dùng cho loại báo cáo nào",
+                options: [
+                    "Báo cáo sao kê chi tiết khách hàng",
+                    "Báo cáo phân tích, tổng hợp",
+                    "Báo cáo điều hành",
+                    "Tất cả các đáp án"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 41,
+                question: "Chuẩn hoá dữ liệu là quá trình",
+                options: [
+                    "Loại bỏ dữ liệu trùng lặp",
+                    "Làm sạch, chuẩn hoá hay chuyển đổi định dạng dữ liệu",
+                    "Đảm bảo tính đúng đắn và duy nhất của dữ liệu",
+                    "Tất cả các đáp án"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 42,
+                question: "Dữ liệu chuyên đề là dạng dữ liệu (Data Mart)",
+                options: [
+                    "Được thiết kế chuyên dụng cho một ứng dụng phân tích cụ thể",
+                    "Cho phép tạo ra các mô hình dữ liệu",
+                    "Được sử dụng trong các báo cáo phân tích",
+                    "Tất cả các đáp án"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 43,
+                question: "Đặc điểm nào không đúng với mô hình dữ liệu chuyên đề (Data Mart)",
+                options: [
+                    "Dữ liệu linh hoạt",
+                    "Có khả năng mở rộng",
+                    "Không sửa đổi được các tiêu chí định sẵn",
+                    "Tất cả các đáp án"
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 44,
+                question: "Dữ liệu chuyên đề (Data Mart) không được dùng cho dạng báo cáo nào",
+                options: [
+                    "Báo cáo sao kê chi tiết khách hàng",
+                    "Báo cáo phân tích, tổng hợp",
+                    "Báo cáo điều hành",
+                    "Tất cả các đáp án"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 45,
+                question: "Trình tự tổng hợp dữ liệu chuyên đề Data Mart",
+                options: [
+                    "Tập hợp các bảng dữ liệu thô -> Chuẩn hóa dữ liệu -> Tạo dữ liệu chuyên đề",
+                    "Chuẩn hóa dữ liệu -> Tập hợp các bảng dữ liệu thô -> Tạo dữ liệu chuyên đề",
+                    "Tạo dữ liệu chuyên đề -> Chuẩn hóa dữ liệu -> Tập hợp các bảng dữ liệu thô",
+                    "Tất cả các đáp án"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 46,
+                question: "Phân cấp dữ liệu tổng hợp theo trình tự nào",
+                options: [
+                    "Toàn hệ thống -> CN cấp 1 -> CN cấp 2",
+                    "CN cấp 1-> Toàn hệ thống -> CN cấp 2",
+                    "CN cấp 2 -> CN cấp 1 -> Toàn hệ thống",
+                    "Tất cả các đáp án"
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 47,
+                question: "Việc phân cấp dữ liệu có tác dụng gì",
+                options: [
+                    "Quản lý dữ liệu chuyên biệt",
+                    "Đơn giản hoá quy trình quản lý dữ liệu",
+                    "Truy vấn dữ liệu theo mục đích, tiêu chí một cách nhanh chóng",
+                    "Tất cả các đáp án"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 48,
+                question: "Hàm lấy dữ liệu tự động có những đặc điểm nào",
+                options: [
+                    "Công thức sử dụng linh hoạt",
+                    "Tùy biến điều kiện đầu vào",
+                    "Đơn giản hóa cho người sử dụng",
+                    "Tất cả các đáp án"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 49,
+                question: "Vai trò của hệ thống MIS trong ngân hàng",
+                options: [
+                    "Quản lý khai thác thông tin",
+                    "Trợ giúp đưa ra các quyết định cho tầm nhìn và chiến lược của lãnh đạo",
+                    "Cung cấp dữ liệu đã được phân tích nhanh chóng và chính xác",
+                    "Tất cả các đáp án"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 50,
+                question: "Báo cáo dạng tĩnh trong MIS có những đặc điểm nào",
+                options: [
+                    "Các công thức, tiêu chí cố định",
+                    "Thay đổi tiêu chí phức tạp, mất nhiều thời gian",
+                    "Người sử dụng không tự xây dựng được báo cáo",
+                    "Tất cả các đáp án"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 51,
+                question: "Báo cáo dạng động trong MIS có những đặc điểm nào",
+                options: [
+                    "Các công thức, tiêu chí linh hoạt",
+                    "Người sử dụng có thể tự tạo các báo cáo của riêng mình",
+                    "Thay đổi các tiêu chí của báo cáo đơn giản, nhanh chóng",
+                    "Tất cả các đáp án"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 52,
+                question: "Ngân hàng muốn chuyển tiền qua hệ thống CITAD của ngân hàng nhà nước yêu cầu phải có các thông tin gì:",
+                options: [
+                    "Phải được NHNN cấp mã ngân hàng.",
+                    "Phải được NHNN mở tài khoản bù trừ liên ngân hàng.",
+                    "Cả hai thông tin a, b.",
+                    "Không cần thông tin gì cả."
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 53,
+                question: "Hai Ngân hàng muốn chuyển tiền song phương với nhau yêu cầu phải có các thông tin gì:",
+                options: [
+                    "Phải được NHNN mở tài khoản bù trừ liên ngân hàng.",
+                    "Mỗi Ngân hàng phải mở tài khoản bù trừ tại ngân hàng đối tác.",
+                    "Cả hai thông tin a, b.",
+                    "Không cần thông tin gì cả."
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 54,
+                question: "Chức năng, nhiệm vụ của giao dịch viên khi thực hiện giao dịch chuyển tiền đi:",
+                options: [
+                    "Nhận chứng từ gốc chuyển tiền từ khách hàng và Kiểm tra tính hợp lệ, hợp pháp của chứng từ gốc. Nhập dữ liệu chứng từ gốc (lập lệnh thanh toán) vào hệ thống",
+                    "Phê duyệt lênh thanh toán chuyển đi",
+                    "Đáp án 1 hoặc 2",
+                    "Cả đáp án 1 và 2."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 55,
+                question: "Để hủy được một lệnh chuyển tiền đi yêu cầu:",
+                options: [
+                    "Lệnh chưa được phê duyệt",
+                    "Lệnh đã duyệt nhưng chuyển đi không thành công.",
+                    "Đáp 1 hoặc 2",
+                    "Không thể hủy lệnh chuyển tiền"
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 56,
+                question: "Một lệnh chuyển tiền đã đi thành công. Khách hàng phát hiện ra sai địa chỉ người nhận, khách hàng đến ngân hàng yêu cầu sửa đổi thông tin. Giao dịch viên sẽ làm thế nào:",
+                options: [
+                    "Tìm lệnh chuyển tiền lên và sửa đổi thông tin địa chỉ người nhận.",
+                    "Lập tra soát yêu cầu ngân hàng trả tiền cho khách hàng với địa chỉ mới.",
+                    "Thực hiện hủy lệnh chuyển tiền",
+                    "Trả lời khách hàng là không làm được."
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 57,
+                question: "Chức năng của Giao dịch viên đối với lệnh chuyển tiền đi:",
+                options: [
+                    "Lập lệnh/Sửa đổi lệnh/Hủy lệnh chuyển tiền đi",
+                    "Duyệt lệnh chuyển tiền",
+                    "Đáp án 1 hoặc 2.",
+                    "Cả đáp 1 và 2."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 58,
+                question: "Chức năng của Kiểm soát viên đối với lệnh chuyển tiền đi:",
+                options: [
+                    "Lập lệnh/Sửa đổi lệnh/Hủy lệnh chuyển tiền đi",
+                    "Duyệt lệnh chuyển tiền",
+                    "Đáp án 1 hoặc 2.",
+                    "Cả đáp 1 và 2."
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 59,
+                question: "Giao dịch viên lập một lệnh chuyển tiền đi hoàn thành (kiểm soát chưa phê duyệt đi), phát hiện bị sai thông tin người nhận, giao dịch viên nên xử lý thế nào?",
+                options: [
+                    "Tìm lệnh chuyển tiền lên và sửa đổi thông tin người nhận đúng.",
+                    "Lập tra soát yêu cầu ngân hàng trả tiền cho khách hàng với thông tin mới.",
+                    "Hủy giao dịch bị sai thông tin",
+                    "Không xử lý được."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 60,
+                question: "Lệnh chuyển tiền đến ngân hàng có thể là?",
+                options: [
+                    "Lệnh chuyển đến vào tài khoản khách hàng",
+                    "Lệnh chuyển đến nhận tiền Chứng minh thư.",
+                    "Lệnh chuyển tiếp cho ngân hàng khác",
+                    "Tất cả các ý trên."
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 61,
+                question: "Ngân hàng A nhận lệnh thanh toán đến từ hệ thống Citad, sau khi hạch toán đến (khách hàng chưa nhận tiền), nhận được tra soát từ Ngân hàng phát lệnh yêu cầu hoàn trả lại lệnh do chuyển nhầm:",
+                options: [
+                    "Ngân hàng A tiến hành hủy lệnh đến và thông báo Ngân hàng phát lệnh hủy lệnh chuyển tiền đi.",
+                    "Ngân hàng A tiến hành tất toán lệnh đến và lập lệnh thanh toán đi để hoàn trả lại lệnh thanh toán cho Ngân hàng phát lệnh theo yêu cầu.",
+                    "Ngân hàng gửi lệnh gửi tra soát và gửi kèm một lệnh báo nợ bằng số tiền của lệnh thanh toán chuyển nhầm về ngân hàng A.",
+                    "Ngân hàng A trả lời không thể làm được."
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 62,
+                question: "Xác định quan hệ thực thể của LOAICHUYENTIEN và CHUYENTIENDI:",
+                options: [
+                    "Một - Một",
+                    "Một – Nhiều",
+                    "Nhiều – Một",
+                    "Nhiều – Nhiều"
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 63,
+                question: "Tìm câu trả lời đúng cho câu hỏi sau: Tìm tất cả các khách hàng chuyển tiền đi có số tiền nhỏ hơn 500.000.",
+                options: [
+                    "SELECT KH_CHUYEN FROM CHUYENTIENDI WHERE SOTIEN >= 500000;",
+                    "SELECT KH_CHUYEN FROM CHUYENTIENDI WHERE SOTIEN > 500000;",
+                    "SELECT KH_CHUYEN FROM CHUYENTIENDI WHERE SOTIEN <= 500000;",
+                    "SELECT KH_CHUYEN FROM CHUYENTIENDI WHERE SOTIEN < 500000;"
+                ],
+                answer: 3,
+                image: null
+            },
+            {
+                id: 64,
+                question: "Tìm câu trả lời đúng cho câu hỏi sau: Tìm tất cả các khách hàng chuyển tiền đi có tên NGUYEN VAN A của chi nhánh Hà Nội có MACHINHANH là 1500:",
+                options: [
+                    "SELECT KH_CHUYEN FROM CHUYENTIENDI WHERE MACHINHANH = 1500 AND KH_CHUYEN = 'NGUYEN VAN A';",
+                    "SELECT KH_NHAN FROM CHUYENTIENDI WHERE MACHINHANH = 1500 AND KH_CHUYEN = 'NGUYEN VAN A';",
+                    "SELECT KH_NHAN FROM CHUYENTIENDI WHERE MACHINHANH = 1500 AND KH_CHUYEN = 'NGUYEN VAN A';",
+                    "SELECT KH_CHUYEN FROM CHUYENTIENDI WHERE MACHINHANH = 1500 OR KH_CHUYEN = 'NGUYEN VAN A';"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 65,
+                question: "Tìm câu trả lời đúng cho yêu cầu sau: Khách hàng muốn thay đổi thông tin người hưởng từ Nguyen Thi B sang Nguyen Thi C của giao dịch chuyển tiền tại chi nhánh Hà nội có MACHINHANH là 1500 có MAGIAODICHDI là XYZ",
+                options: [
+                    "UPDATE CHUYENTIENDI SET KH_NHAN = 'Nguyen Thi C' WHERE MACHINHANH = 1500 AND MAGIAODICHDI = XYZ AND KH_NHAN = 'Nguyen Thi B'.",
+                    "UPDATE CHUYENTIENDI SET KH_CHUYEN = 'Nguyen Thi C' WHERE MACHINHANH = 1500 AND MAGIAODICHDI = XYZ AND KH_NHAN = 'Nguyen Thi B' AND TRANGTHAI = 'CREATE'.",
+                    "UPDATE CHUYENTIENDI SET KH_NHAN = 'Nguyen Thi C' WHERE MAGIAODICHDI = XYZ AND KH_NHAN = 'Nguyen Thi B'.",
+                    "UPDATE CHUYENTIENDEN SET KH_NHAN = 'Nguyen Thi C' WHERE MAGIAODICHDI = XYZ AND KH_NHAN = 'Nguyen Thi B'."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 66,
+                question: "Liệt kê danh sách các lệnh chuyển tiền của chi nhánh có MACHINHANH là 1500 mà lệnh đi thành công, kết quả được sắp xếp theo chiều tăng dần theo ngày và số tiền giao dịch. Yêu cầu thông tin: MAGIAODICHDI, NGAYGIAODICH, SOTIEN",
+                options: [
+                    "SELECT MAGIAODICHDI, NGAYGIAODICH, SOTIEN FROM CHUYENTIENDI WHERE MACHINHANH = 1500 ORDER BY NGAYGIAODICH, SOTIEN.",
+                    "SELECT MAGIAODICHDI, NGAYGIAODICH, SOTIEN FROM CHUYENTIENDI WHERE MACHINHANH = 1500 AND TRANGTHAI = 'SUCCESS' ORDER BY NGAYGIAODICH, SOTIEN.",
+                    "SELECT MAGIAODICHDI, NGAYGIAODICH, SOTIEN FROM CHUYENTIENDI WHERE MACHINHANH = 1500 TRANGTHAI <> 'SUCCESS' ORDER BY NGAYGIAODICH, SOTIEN.",
+                    "SELECT MAGIAODICHDI, NGAYGIAODICH, SOTIEN FROM CHUYENTIENDEN WHERE MACHINHANH = 1500 TRANGTHAI <> 'SUCCESS' ORDER BY NGAYGIAODICH, SOTIEN."
+                ],
+                answer: 1,
+                image: null
+            },
+            {
+                id: 67,
+                question: "Hãy cho biết tổng số lệnh đi thành công của mỗi chi nhánh, thông tin được sắp theo chiều tăng dần chi nhánh.",
+                options: [
+                    "SELECT MACHINHANH, COUNT(*) FROM CHUYENTIENDI GROUP BY MACHINHANH ORDER BY MACHINHANH.",
+                    "SELECT MACHINHANH, COUNT(*) FROM CHUYENTIENDI WHERE TRANGTHAI <> 'SUCCESS' GROUP BY MACHINHANH ORDER BY MACHINHANH.",
+                    "SELECT MACHINHANH, COUNT(*) FROM CHUYENTIENDI WHERE TRANGTHAI = 'SUCCESS' GROUP BY MACHINHANH ORDER BY MACHINHANH.",
+                    "SELECT MACHINHANH, COUNT(*) FROM CHUYENTIENDEN WHERE TRANGTHAI <> 'SUCCESS' GROUP BY MACHINHANH ORDER BY MACHINHANH"
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 68,
+                question: "Khách hàng Nguyen Van A đến ngân hàng có MACHINHANH là 1500 muốn nhận số tiền 500000 với số Chứng minh thư: 123456789. Hãy truy vấn thông tin để chi tiền cho khách hàng:",
+                options: [
+                    "SELECT MAGIAODICHDEN ,NGAYGIAODICH, LOAITIEN, SOTIEN, KH_CHUYEN, KH_NHAN FROM CHUYENTIENDEN WHERE MACHINHANH=1500 AND KH_NHAN = 'Nguyen Van A' AND CMT = 123456789.",
+                    "SELECT MAGIAODICHDEN ,NGAYGIAODICH, LOAITIEN, SOTIEN, KH_CHUYEN, KH_NHAN FROM CHUYENTIENDEN WHERE MACHINHANH=1500 AND KH_NHAN = 'Nguyen Van A' AND CMT = 123456789 AND SOTIEN = 500000.",
+                    "SELECT MAGIAODICHDEN ,NGAYGIAODICH, LOAITIEN, SOTIEN, KH_CHUYEN, KH_NHAN FROM CHUYENTIENDEN WHERE MACHINHANH=1500 AND KH_NHAN = 'Nguyen Van A' AND CMT = 123456789 AND SOTIEN = 500000 AND TRANGTHAI = UNPAID.",
+                    "SELECT MAGIAODICHDEN ,NGAYGIAODICH, LOAITIEN, SOTIEN, KH_CHUYEN, KH_NHAN FROM CHUYENTIENDI WHERE MACHINHANH=1500 AND KH_NHAN = 'Nguyen Van A' AND CMT = 123456789 AND SOTIEN = 500000."
+                ],
+                answer: 2,
+                image: null
+            },
+            {
+                id: 69,
+                question: "Khi bắt đầu một dự án, người ta phải xác định điểm mốc thời gian nào?",
+                options: [
+                    "Chỉ chọn 1 trong 2 điểm mốc Start Date hoặc Finish Date.",
+                    "Phải xác định cả 2 điểm mốc Start Date hoặc Finish Date.",
+                    "Không cần xác định điểm mốc nào.",
+                    "Xác định tổng số ngày cần thực hiện dự án."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 70,
+                question: "Thuật ngữ Mile stone trong MS Project có ý nghĩa gì?",
+                options: [
+                    "Chỉ điểm mốc của dự án để xem kết quả tạm thời thực hiện dự án.",
+                    "Xác định điểm giữa của dự án.",
+                    "Xác định điểm kết thúc của mỗi công việc",
+                    "Xác định điểm bắt đầu của mỗi công việc."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 71,
+                question: "Đường Timeline trong quản trị dự án dùng để chỉ",
+                options: [
+                    "Tổng thời gian thực hiện dự án bao",
+                    "Điểm khởi đầu dự án",
+                    "Điểm kết thúc dự án.",
+                    "Điểm khởi đầu và điểm kết thúc dự án"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 72,
+                question: "Khi lập lịch để thực hiện quản trị dự án trong MS Project, người ta có thể thực hiện như thế nào?",
+                options: [
+                    "Sử dụng lịch mặc định như Standard, Night shift... hoặc tạo lịch riêng",
+                    "Sử dụng lịch mặc định như Standard, Night shift...",
+                    "Phải tạo lịch làm việc riêng",
+                    "Sử dụng lịch mặc định như Standard, Night shift và phải tạo thêm lịch làm việc riêng"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 73,
+                question: "Thuật ngữ Exception trong quản trị dự án của Ms Project được dùng để chỉ?",
+                options: [
+                    "Một ngoại lệ trong lịch làm việc.",
+                    "Một ngoại lệ trong việc sử dụng tài nguyên nhân lực",
+                    "Một ngoại lệ trong trong việc sử dụng nguồn lực",
+                    "Một ngoại lệ trong trong việc sử dụng tiền"
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 74,
+                question: "Nguồn lực Material trong Ms Project dùng để xác định cái gì?",
+                options: [
+                    "Nguồn lực của dự án không bị chia sẻ.",
+                    "Nguồn lực của dự án có chia sẻ.",
+                    "Nguồn lực của dự án dùng chung với dự án khác.",
+                    "Nguồn lực tài chính của dự án."
+                ],
+                answer: 0,
+                image: null
+            },
+            {
+                id: 75,
+                question: "Lịch làm việc của một dự án cho phép nghỉ vào ngày lễ 01/05. Người quản lý sử dụng Công cụ nào để cài đặt",
+                options: [
+                    "Exception",
+                    "Working Time",
+                    "Work Week",
+                    "NoneWorking Time"
+                ],
+                answer: 0,
+                image: null
+            }
+        ];
+
+        // Biến toàn cục
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let wrongQuestions = [];
+        let randomMode = false;
+        let shuffleAnswersMode = false;
+        let questionOrder = Array.from({length: questions.length}, (_, i) => i);
+        let autoAdvanceTime = 0;
+        let autoAdvanceTimer = null;
+        let countdownTimer = null;
+        let countdownValue = 0;
+        let menuOpen = false;
+
+        // DOM Elements
+        const menuButton = document.getElementById('menuButton');
+        const menuPanel = document.getElementById('menuPanel');
+        const menuContent = document.getElementById('menuContent');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const closeMenuBtn = document.getElementById('closeMenu');
+        const questionText = document.getElementById('questionText');
+        const questionImage = document.getElementById('questionImage');
+        const answersContainer = document.getElementById('answersContainer');
+        const currentQuestionNumber = document.getElementById('currentQuestionNumber');
+        const questionStatus = document.getElementById('questionStatus');
+        const prevQuestionBtn = document.getElementById('prevQuestion');
+        const nextQuestionBtn = document.getElementById('nextQuestion');
+        const showAllQuestionsBtn = document.getElementById('showAllQuestions');
+        const redoWrongBtn = document.getElementById('redoWrong');
+        const resetQuizBtn = document.getElementById('resetQuiz');
+        const randomModeToggle = document.getElementById('randomMode');
+        const shuffleAnswersToggle = document.getElementById('shuffleAnswers');
+        const questionsListModal = document.getElementById('questionsListModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const questionsGrid = document.getElementById('questionsGrid');
+        const bgImageUpload = document.getElementById('bgImageUpload');
+        const clearBackgroundBtn = document.getElementById('clearBackground');
+        const correctCount = document.getElementById('correctCount');
+        const incorrectCount = document.getElementById('incorrectCount');
+        const unansweredCount = document.getElementById('unansweredCount');
+        const progressPercent = document.getElementById('progressPercent');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const timeOptions = document.querySelectorAll('.time-option');
+        const timerCircle = document.getElementById('timerCircle');
+        const jumpToQuestionBtn = document.getElementById('jumpToQuestion');
+
+        // Khởi tạo ứng dụng
+        function init() {
+            // Thêm thuộc tính shuffleMap cho mỗi câu hỏi
+            questions.forEach(q => {
+                q.shuffleMap = null;
+            });
+            
+            displayQuestion(currentQuestionIndex);
+            updateStats();
+            createQuestionsGrid();
+            setupEventListeners();
+            
+            // Thêm hiệu ứng kéo cho menu content
+            enableMenuScroll();
+        }
+
+        // Thiết lập sự kiện
+        function setupEventListeners() {
+            // Menu toggle
+            menuButton.addEventListener('click', toggleMenu);
+            menuOverlay.addEventListener('click', closeMenu);
+            closeMenuBtn.addEventListener('click', closeMenu);
+            
+            // Navigation
+            prevQuestionBtn.addEventListener('click', goToPrevQuestion);
+            nextQuestionBtn.addEventListener('click', goToNextQuestion);
+            
+            // Modal
+            showAllQuestionsBtn.addEventListener('click', () => {
+                questionsListModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                closeMenu();
+            });
+            
+            closeModalBtn.addEventListener('click', () => {
+                questionsListModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            questionsListModal.addEventListener('click', (e) => {
+                if (e.target === questionsListModal) {
+                    questionsListModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // Actions
+            redoWrongBtn.addEventListener('click', () => {
+                redoWrongQuestions();
+                closeMenu();
+            });
+            
+            resetQuizBtn.addEventListener('click', () => {
+                resetQuiz();
+                closeMenu();
+            });
+            
+            jumpToQuestionBtn.addEventListener('click', () => {
+                const questionNum = prompt(`Nhập số câu hỏi (1-${questions.length}):`, currentQuestionIndex + 1);
+                if (questionNum && !isNaN(questionNum)) {
+                    const num = parseInt(questionNum);
+                    if (num >= 1 && num <= questions.length) {
+                        goToQuestion(num - 1);
+                        closeMenu();
+                    } else {
+                        alert(`Vui lòng nhập số từ 1 đến ${questions.length}!`);
+                    }
+                }
+            });
+            
+            randomModeToggle.addEventListener('change', toggleRandomMode);
+            shuffleAnswersToggle.addEventListener('change', toggleShuffleAnswers);
+            
+            bgImageUpload.addEventListener('change', handleBackgroundUpload);
+            clearBackgroundBtn.addEventListener('click', clearBackground);
+            
+            // Time options
+            timeOptions.forEach(option => {
+                option.addEventListener('click', handleTimeOptionClick);
+            });
+            
+            // Swipe gestures cho câu hỏi
+            setupSwipeGestures();
+            
+            // Prevent zoom
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+            
+            // Close menu khi click ngoài
+            document.addEventListener('click', (e) => {
+                if (menuOpen && !menuPanel.contains(e.target) && e.target !== menuButton) {
+                    closeMenu();
+                }
+            });
+        }
+
+        // Kích hoạt cuộn cho menu
+        function enableMenuScroll() {
+            let startY;
+            let scrollTop;
+            
+            menuContent.addEventListener('touchstart', (e) => {
+                startY = e.touches[0].clientY;
+                scrollTop = menuContent.scrollTop;
+            });
+            
+            menuContent.addEventListener('touchmove', (e) => {
+                if (!startY) return;
+                
+                const y = e.touches[0].clientY;
+                const walk = (startY - y) * 2;
+                
+                menuContent.scrollTop = scrollTop + walk;
+                
+                // Ngăn chặn scroll body khi đang scroll menu
+                if (menuContent.scrollHeight > menuContent.clientHeight) {
+                    e.preventDefault();
+                }
+            });
+            
+            menuContent.addEventListener('touchend', () => {
+                startY = null;
+                scrollTop = null;
+            });
+        }
+
+        // Toggle menu
+        function toggleMenu() {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                menuPanel.classList.add('active');
+                menuOverlay.classList.add('active');
+                menuButton.innerHTML = '<i class="fas fa-times"></i>';
+                menuButton.style.background = 'rgba(231, 76, 60, 0.95)';
+            } else {
+                closeMenu();
+            }
+        }
+
+        // Close menu
+        function closeMenu() {
+            menuPanel.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            menuButton.innerHTML = '<i class="fas fa-bars"></i>';
+            menuButton.style.background = 'rgba(52, 152, 219, 0.95)';
+            menuOpen = false;
+        }
+
+        // Handle time option click
+        function handleTimeOptionClick(e) {
+            timeOptions.forEach(opt => opt.classList.remove('selected'));
+            e.target.classList.add('selected');
+            autoAdvanceTime = parseInt(e.target.getAttribute('data-time'));
+            resetAutoAdvance();
+            updateTimerDisplay();
+        }
+
+        // Swipe gestures cho câu hỏi
+        function setupSwipeGestures() {
+            let startX, startY;
+            const container = document.querySelector('.question-container');
+            
+            container.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            });
+            
+            container.addEventListener('touchmove', (e) => {
+                if (!startX || !startY) return;
+                
+                const diffX = startX - e.touches[0].clientX;
+                const diffY = startY - e.touches[0].clientY;
+                
+                // Chỉ cho phép swipe ngang nếu vuốt ngang nhiều hơn dọc
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    e.preventDefault(); // Ngăn scroll dọc
+                }
+            });
+            
+            container.addEventListener('touchend', (e) => {
+                if (!startX || !startY) return;
+                
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                
+                const diffX = startX - endX;
+                const diffY = startY - endY;
+                
+                // Kiểm tra nếu là swipe ngang
+                if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                    if (diffX > 50) {
+                        // Vuốt trái -> đi tới
+                        goToNextQuestion();
+                    } else if (diffX < -50) {
+                        // Vuốt phải -> lùi lại
+                        goToPrevQuestion();
+                    }
+                }
+                
+                startX = null;
+                startY = null;
+            });
+        }
+
+        // Display question
+        function displayQuestion(index) {
+            const questionIndex = questionOrder[index];
+            const question = questions[questionIndex];
+            
+            currentQuestionNumber.textContent = index + 1;
+            questionText.textContent = question.question;
+            
+            // Hiển thị hình ảnh nếu có
+            if (question.image) {
+                questionImage.innerHTML = `<img src="${question.image}" alt="Hình câu hỏi" class="question-image">`;
+            } else {
+                questionImage.innerHTML = '';
+            }
+            
+            // Status
+            if (userAnswers[questionIndex] !== null) {
+                const isCorrect = userAnswers[questionIndex] === question.answer;
+                questionStatus.textContent = isCorrect ? "✓ Đúng" : "✗ Sai";
+                questionStatus.style.color = isCorrect ? "#28a745" : "#dc3545";
+            } else {
+                questionStatus.textContent = "Chưa làm";
+                questionStatus.style.color = "#6c757d";
+            }
+            
+            // Chuẩn bị các đáp án - QUAN TRỌNG: Lưu trữ ánh xạ đảo đáp án
+            let displayOptions = [...question.options];
+            let correctAnswerIndex = question.answer;
+            let answerMapping = question.shuffleMap; // Ánh xạ: [displayIndex] -> originalIndex
+            
+            // Đảo thứ tự đáp án nếu chế độ bật
+            if (shuffleAnswersMode) {
+                // Nếu câu đã được trả lời, sử dụng ánh xạ đã lưu (nếu có)
+                // Nếu chưa có, tạo ánh xạ mới
+                if (!question.shuffleMap) {
+                    // Tạo ánh xạ mới cho câu hỏi
+                    const indices = Array.from({length: displayOptions.length}, (_, i) => i);
+                    shuffleArray(indices);
+                    
+                    // Lưu ánh xạ vào đối tượng câu hỏi
+                    question.shuffleMap = indices;
+                    
+                    // Tạo mảng đáp án mới
+                    const newOptions = indices.map(i => displayOptions[i]);
+                    
+                    // Tìm chỉ số đáp án đúng mới
+                    correctAnswerIndex = indices.indexOf(question.answer);
+                    
+                    // Gán lại
+                    displayOptions = newOptions;
+                    answerMapping = indices;
+                } else {
+                    // Sử dụng ánh xạ đã lưu
+                    const newOptions = question.shuffleMap.map(i => displayOptions[i]);
+                    correctAnswerIndex = question.shuffleMap.indexOf(question.answer);
+                    displayOptions = newOptions;
+                    answerMapping = question.shuffleMap;
+                }
+            } else {
+                // Nếu tắt chế độ đảo, vẫn sử dụng ánh xạ cũ nếu có
+                // Điều này đảm bảo các câu đã trả lời vẫn giữ nguyên thứ tự
+                if (question.shuffleMap && userAnswers[questionIndex] !== null) {
+                    // Chỉ sử dụng shuffleMap nếu câu đã được trả lời
+                    const newOptions = question.shuffleMap.map(i => displayOptions[i]);
+                    correctAnswerIndex = question.shuffleMap.indexOf(question.answer);
+                    displayOptions = newOptions;
+                    answerMapping = question.shuffleMap;
+                } else {
+                    // Nếu câu chưa trả lời hoặc không có shuffleMap, hiển thị thứ tự gốc
+                    answerMapping = null;
+                }
+            }
+            
+            // Answers
+            answersContainer.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+            
+            displayOptions.forEach((option, displayIndex) => {
+                const answerOption = document.createElement('div');
+                answerOption.className = 'answer-option';
+                
+                // Tìm original index của đáp án này
+                let originalIndex;
+                if (answerMapping) {
+                    originalIndex = answerMapping[displayIndex];
+                } else {
+                    originalIndex = displayIndex;
+                }
+                
+                // Kiểm tra xem đây có phải là đáp án đã chọn không
+                const isSelected = userAnswers[questionIndex] === originalIndex;
+                const isCorrectAnswer = displayIndex === correctAnswerIndex;
+                
+                if (isSelected) {
+                    answerOption.classList.add('selected');
+                    
+                    if (isCorrectAnswer) {
+                        answerOption.classList.add('correct');
+                        answerOption.classList.add('correct-feedback');
+                    } else {
+                        answerOption.classList.add('incorrect');
+                    }
+                }
+                
+                if (userAnswers[questionIndex] !== null && isCorrectAnswer) {
+                    answerOption.classList.add('correct');
+                }
+                
+                answerOption.innerHTML = `
+                    <div class="answer-letter">${letters[displayIndex]}</div>
+                    <div class="answer-text">${option}</div>
+                `;
+                
+                if (userAnswers[questionIndex] === null) {
+                    answerOption.addEventListener('click', () => selectAnswer(questionIndex, originalIndex));
+                }
+                
+                answersContainer.appendChild(answerOption);
+            });
+            
+            // Navigation buttons
+            prevQuestionBtn.disabled = index === 0;
+            nextQuestionBtn.disabled = index === questions.length - 1;
+            
+            // Update grid
+            updateQuestionsGrid();
+            
+            // Scroll to top
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        // Select answer
+        function selectAnswer(questionIndex, optionIndex) {
+            userAnswers[questionIndex] = optionIndex;
+            
+            if (optionIndex !== questions[questionIndex].answer) {
+                if (!wrongQuestions.includes(questionIndex)) {
+                    wrongQuestions.push(questionIndex);
+                }
+            } else {
+                // Xóa khỏi danh sách câu sai nếu đã có
+                const wrongIndex = wrongQuestions.indexOf(questionIndex);
+                if (wrongIndex > -1) {
+                    wrongQuestions.splice(wrongIndex, 1);
+                }
+            }
+            
+            displayQuestion(currentQuestionIndex);
+            updateStats();
+            
+            if (autoAdvanceTime > 0) {
+                startAutoAdvance();
+            }
+        }
+
+        // Auto advance
+        function startAutoAdvance() {
+            resetAutoAdvance();
+            
+            countdownValue = autoAdvanceTime;
+            updateTimerDisplay();
+            
+            countdownTimer = setInterval(() => {
+                countdownValue--;
+                updateTimerDisplay();
+                
+                if (countdownValue <= 0) {
+                    clearInterval(countdownTimer);
+                    countdownTimer = null;
+                    goToNextQuestion();
+                }
+            }, 1000);
+            
+            autoAdvanceTimer = setTimeout(() => {
+                goToNextQuestion();
+                autoAdvanceTimer = null;
+            }, autoAdvanceTime * 1000);
+        }
+
+        // Update timer display
+        function updateTimerDisplay() {
+            timerCircle.textContent = countdownValue;
+            if (autoAdvanceTime > 0) {
+                timerCircle.style.background = countdownValue <= 1 ? 
+                    'rgba(231, 76, 60, 0.3)' : 
+                    'rgba(52, 152, 219, 0.3)';
+                timerCircle.style.borderColor = countdownValue <= 1 ? 
+                    'rgba(231, 76, 60, 0.5)' : 
+                    'rgba(52, 152, 219, 0.5)';
+            } else {
+                timerCircle.style.background = 'rgba(149, 165, 166, 0.3)';
+                timerCircle.style.borderColor = 'rgba(149, 165, 166, 0.5)';
+            }
+        }
+
+        // Navigation
+        function goToPrevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion(currentQuestionIndex);
+                resetAutoAdvance();
+            }
+        }
+
+        function goToNextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion(currentQuestionIndex);
+                resetAutoAdvance();
+            }
+        }
+
+        // Reset auto advance
+        function resetAutoAdvance() {
+            if (autoAdvanceTimer) {
+                clearTimeout(autoAdvanceTimer);
+                autoAdvanceTimer = null;
+            }
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+            countdownValue = 0;
+            updateTimerDisplay();
+        }
+
+        // Go to specific question
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            displayQuestion(currentQuestionIndex);
+            questionsListModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            resetAutoAdvance();
+        }
+
+        // Create questions grid
+        function createQuestionsGrid() {
+            questionsGrid.innerHTML = '';
+            
+            for (let i = 0; i < questions.length; i++) {
+                const questionItem = document.createElement('div');
+                questionItem.className = 'question-item';
+                questionItem.textContent = i + 1;
+                questionItem.addEventListener('click', () => goToQuestion(i));
+                
+                questionsGrid.appendChild(questionItem);
+            }
+            
+            updateQuestionsGrid();
+        }
+
+        // Update questions grid
+        function updateQuestionsGrid() {
+            const questionItems = document.querySelectorAll('.question-item');
+            
+            questionItems.forEach((item, index) => {
+                item.classList.remove('current', 'answered', 'incorrect-answered');
+                
+                if (index === currentQuestionIndex) {
+                    item.classList.add('current');
+                }
+                
+                const questionIndex = questionOrder[index];
+                if (userAnswers[questionIndex] !== null) {
+                    if (userAnswers[questionIndex] === questions[questionIndex].answer) {
+                        item.classList.add('answered');
+                    } else {
+                        item.classList.add('incorrect-answered');
+                    }
+                }
+            });
+        }
+
+        // Update stats
+        function updateStats() {
+            let correct = 0;
+            let incorrect = 0;
+            let unanswered = 0;
+            
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[i] === null) {
+                    unanswered++;
+                } else if (userAnswers[i] === questions[i].answer) {
+                    correct++;
+                } else {
+                    incorrect++;
+                }
+            }
+            
+            const answered = correct + incorrect;
+            
+            correctCount.textContent = correct;
+            incorrectCount.textContent = incorrect;
+            unansweredCount.textContent = unanswered;
+            
+            const percent = Math.round((answered / questions.length) * 100);
+            progressPercent.textContent = `${percent}%`;
+            progressBar.style.width = `${percent}%`;
+            progressText.textContent = `${answered}/${questions.length} câu`;
+        }
+
+        // Toggle random mode
+        function toggleRandomMode() {
+            randomMode = randomModeToggle.checked;
+            
+            if (randomMode) {
+                questionOrder = Array.from({length: questions.length}, (_, i) => i);
+                shuffleArray(questionOrder);
+                
+                const currentQuestionId = questionOrder[currentQuestionIndex];
+                currentQuestionIndex = questionOrder.indexOf(currentQuestionId);
+            } else {
+                const currentQuestionId = questionOrder[currentQuestionIndex];
+                questionOrder = Array.from({length: questions.length}, (_, i) => i);
+                currentQuestionIndex = currentQuestionId;
+            }
+            
+            displayQuestion(currentQuestionIndex);
+            createQuestionsGrid();
+        }
+
+        // Toggle shuffle answers mode
+        function toggleShuffleAnswers() {
+            shuffleAnswersMode = shuffleAnswersToggle.checked;
+            
+            if (shuffleAnswersMode) {
+                // Khi bật chế độ đảo, tạo ánh xạ mới cho tất cả câu chưa có shuffleMap
+                questions.forEach(q => {
+                    if (!q.shuffleMap) {
+                        const indices = Array.from({length: q.options.length}, (_, i) => i);
+                        shuffleArray(indices);
+                        q.shuffleMap = indices;
+                    }
+                });
+            } else {
+                // Khi tắt chế độ đảo, KHÔNG xóa shuffleMap để giữ nguyên thứ tự cho các câu đã trả lời
+                // Chỉ đảm bảo các câu chưa trả lời sẽ hiển thị thứ tự gốc
+            }
+            
+            // Hiển thị lại câu hỏi hiện tại với ánh xạ mới
+            displayQuestion(currentQuestionIndex);
+        }
+
+        // Shuffle array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Redo wrong questions
+        function redoWrongQuestions() {
+            if (wrongQuestions.length === 0) {
+                alert("🎯 Bạn chưa có câu nào sai!");
+                return;
+            }
+            
+            const newUserAnswers = new Array(questions.length).fill(null);
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[i] === questions[i].answer) {
+                    newUserAnswers[i] = userAnswers[i];
+                }
+            }
+            
+            userAnswers = newUserAnswers;
+            wrongQuestions = [];
+            
+            // Tìm câu hỏi đầu tiên chưa làm
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[questionOrder[i]] === null) {
+                    currentQuestionIndex = i;
+                    break;
+                }
+            }
+            
+            displayQuestion(currentQuestionIndex);
+            updateStats();
+            resetAutoAdvance();
+            alert("🔄 Đã đặt lại các câu sai!");
+        }
+
+        // Reset quiz
+        function resetQuiz() {
+            if (confirm("Bạn có chắc muốn làm lại từ đầu?\nTất cả câu trả lời sẽ bị xóa.")) {
+                userAnswers = new Array(questions.length).fill(null);
+                wrongQuestions = [];
+                currentQuestionIndex = 0;
+                
+                // Xóa tất cả shuffleMap
+                questions.forEach(q => {
+                    q.shuffleMap = null;
+                });
+                
+                if (randomMode) {
+                    questionOrder = Array.from({length: questions.length}, (_, i) => i);
+                    shuffleArray(questionOrder);
+                } else {
+                    questionOrder = Array.from({length: questions.length}, (_, i) => i);
+                }
+                
+                // Nếu đang bật chế độ đảo đáp án, tạo shuffleMap mới
+                if (shuffleAnswersMode) {
+                    questions.forEach(q => {
+                        const indices = Array.from({length: q.options.length}, (_, i) => i);
+                        shuffleArray(indices);
+                        q.shuffleMap = indices;
+                    });
+                }
+                
+                displayQuestion(currentQuestionIndex);
+                updateStats();
+                resetAutoAdvance();
+            }
+        }
+
+        // Handle background upload
+        function handleBackgroundUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.match('image.*')) {
+                alert("Vui lòng chọn file ảnh!");
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Đặt ảnh nền KHÔNG có blur
+                document.body.style.backgroundImage = `url(${e.target.result})`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.backgroundAttachment = 'fixed';
+                document.body.style.backgroundColor = 'transparent';
+                
+                // Xóa backdrop-filter từ body
+                document.body.style.backdropFilter = 'none';
+                document.body.style.webkitBackdropFilter = 'none';
+                
+                closeMenu();
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // Clear background
+        function clearBackground() {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundColor = 'transparent';
+            bgImageUpload.value = '';
+            
+            // Thêm backdrop-filter nhẹ lại
+            document.body.style.backdropFilter = 'blur(2px)';
+            document.body.style.webkitBackdropFilter = 'blur(2px)';
+            
+            closeMenu();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
